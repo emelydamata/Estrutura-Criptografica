@@ -1,13 +1,12 @@
-import os
-import socket
 import getpass
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import socket
+import os
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, hmac
 
 ''' Construção da Classe Emitter '''
-
 
 class Emitter:
 
@@ -22,7 +21,7 @@ class Emitter:
     def conexao(con):
         con.conn.connect(con.address)
 
-        ''' Solicitação da Mensagem. '''
+    ''' Solicitação da Mensagem. '''
 
     def msg_emitter(con):
         con.mesg = input("Qual a Mensagem?")
@@ -35,52 +34,45 @@ class Emitter:
         text_cifrado = cifrar.update(msg) + cifrar.finalize()
         return iv, text_cifrado, cifrar.tag
 
+    ''' Encerrar a Conexão'''
+    def finish(con):
+        con.conn.close()
+        print(' Encerrando Conexão... ')
 
     def execute(con):
-        con.conexao()
+        con.conexao()  # Conecta-se ao Servidor
         password = requestPassWord()
         salt = os.urandom(16)
         key = derivation(salt).derive(password)
 
-        while 1:
+        while True:
+            msg = con.msg_emitter()
+
             try:
-                msg = con.msg_emitter()
-                break
-                tag_msg = authenticationMac(funcaoHash(key), msg)
-                iv, ciphertext, tag_cifra = con.cipher(key, msg)
-                msg_cif = salt + tag_msg + iv + tag_cifra + ciphertext
-                amount_expected = len(msg_cif)
-                if (amount_expected > 0):
-                    con.conn.sendall(msg_cif)
+
+                tmsg = mac(Hash(key), msg)
+
+                iv, ciphertext, tcif = con.cipher(key, msg)
+
+                msgcif = salt + tmsg + iv + tcif + ciphertext
+                if (len(msgcif) > 0):
+                    con.conn.send(msgcif)
+                    print(msgcif)
                 else:
                     con.finish()
-            except socket.error as e:
-                print("Socket error: %s" % str(e))
+            except:
+                print("Erro no Emissor")
 
 
 
-    ''' Encerrar a Conexão'''
-    def finish(con):
-        con.socket.close()
-        print(' Encerrando Conexão...')
 
-'''demais fun '''
-
-def authenticationMac(key, source, tag=None):
-    hmac_ = hmac.HMAC(key, hashes.SHA256(), default_backend())
-    hmac_.update(source)
-    if tag == None:
-        return hmac_.finalize()
-    hmac_.verify(tag)
-
-def funcaoHash(s):
-    digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-    digest.update(s)
-    return digest.finalize()
+''' Tratativa de Password '''
 
 def requestPassWord():
     password = getpass.getpass('Insira a Password: ')
     return str.encode(password)
+
+''' Derivação da Key:'''
 
 def derivation(salt):
     kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
@@ -90,7 +82,20 @@ def derivation(salt):
                      backend=default_backend())
     return kdf
 
+''' Autenticação '''
 
+def mac(key, source, tag):
+    hmac_ = hmac.HMAC(key, hashes.SHA256(), default_backend())
+    hmac_.update(source)
+    if tag == None:
+        return hmac_.finalize()
+    hmac_.verify(tag)
+
+''' Hash da Mensagem'''
+def Hash(s):
+    digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+    digest.update(s)
+    return digest.finalize()
 
 def chamada():
     em = Emitter()
