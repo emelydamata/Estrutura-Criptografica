@@ -6,100 +6,102 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, hmac
 
+
+
 ''' Construção da Classe Emitter '''
 
 class Emitter:
 
-    def __init__(con):
+    def __init__(self):
         host = 'localhost'
-        port = 8282
-        con.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        con.address = (host, port)
+        port = 8082
+        self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.address = (host, port)
 
-    ''' Criando uma Conexão. '''
+    def conexao(self):
+        self.conn.connect(self.address)
 
-    def conexao(con):
-        con.conn.connect(con.address)
+    def msg_emitter(self):
+        self.mesg = input("Qual a Mensagem?")
+        return self.mesg.encode()
 
-    ''' Solicitação da Mensagem. '''
-
-    def msg_emitter(con):
-        con.mesg = input("Qual a Mensagem?")
-        return con.mesg.encode()
-
-    def cipher(con, key, msg):
+    def encription(self, key, msg):
         iv = os.urandom(16)
         cipher = Cipher(algorithms.AES(key), modes.GCM(iv), default_backend())
         cifrar = cipher.encryptor()
         text_cifrado = cifrar.update(msg) + cifrar.finalize()
         return iv, text_cifrado, cifrar.tag
 
-    ''' Encerrar a Conexão'''
-    def finish(con):
-        con.conn.close()
-        print(' Encerrando Conexão... ')
+    def finish(self):
+        self.conn.close()
+        print(' Fim da Comunicação com o Receiver. ')
 
-    def execute(con):
-        con.conexao()  # Conecta-se ao Servidor
+    def execute(self):
+        self.conexao()
         password = requestPassWord()
         salt = os.urandom(16)
-        key = derivation(salt).derive(password)
+        key = kdf2Hmac(salt).derive(password)
 
         while True:
-            msg = con.msg_emitter()
+            msg = self.msg_emitter()
 
             try:
 
-                tmsg = mac(Hash(key), msg)
+                t_msg = mac(Hash(key), msg)
 
-                iv, ciphertext, tcif = con.cipher(key, msg)
+                iv, ciphertext, t_mcif = self.encription(key, msg)
 
-                msgcif = salt + tmsg + iv + tcif + ciphertext
-                if (len(msgcif) > 0):
-                    con.conn.send(msgcif)
-                    print(msgcif)
+                text_cifrado = salt + t_msg + iv + t_mcif + ciphertext
+                if (len(text_cifrado) > 0):
+                    self.conn.send(text_cifrado)
+                    print('Mensagem Cifrada para Envio:', text_cifrado)
                 else:
-                    con.finish()
+                    self.endConnection()
             except:
-                print("Erro no Emissor")
+                print("Erro na Comunicação")
 
 
 
-
-''' Tratativa de Password '''
+''' Função para Solicitar uma Password ao Emitter, para efetuar a comunicação. '''
 
 def requestPassWord():
-    password = getpass.getpass('Insira a Password: ')
+    password = getpass.getpass()
     return str.encode(password)
 
-''' Derivação da Key:'''
+'''Função para realizar a Derivação da Key - Utilizando o recurso KDF2HMAC '''
 
-def derivation(salt):
-    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
-                     length=32,
-                     salt=salt,
-                     iterations=100000,
-                     backend=default_backend())
+def kdf2Hmac(salt):
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+        backend=default_backend())
     return kdf
 
-''' Autenticação '''
+''' Função Para Autenticação. '''
 
-def mac(key, source, tag):
-    hmac_ = hmac.HMAC(key, hashes.SHA256(), default_backend())
-    hmac_.update(source)
+def mac(key, source, tag=None):
+    h = hmac.HMAC(key, hashes.SHA256(), default_backend())
+    h.update(source)
     if tag == None:
-        return hmac_.finalize()
-    hmac_.verify(tag)
+        return h.finalize()
+    h.verify(tag)
 
-''' Hash da Mensagem'''
+
+'''Função Hash. '''
+
 def Hash(s):
     digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
     digest.update(s)
     return digest.finalize()
 
+''' Função Para chamar a Execução das funções estabelecidas para a comunicação. '''
+
 def chamada():
     em = Emitter()
     em.execute()
     return
+
 
 chamada()
