@@ -15,7 +15,6 @@ class Receiver:
         host = 'localhost'
         port = 8082
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # Se necessário a reutilização do endereço/porta:
         self.conn.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         print("*** Aguardando uma Conexão com Emitter ***")
         self.address = (host, port)
