@@ -15,11 +15,11 @@ O semestre segue distribuido em 04 trabalhos práticos, distribuidos entre os re
 | T2       | 5 e 6 de Maio        |           
 | T3       | 2 e 4 de Junho       | 
 
-* O envio da documentação deve ser efetuado sempre na "SEGUNDA-FEIRA" anterior as datas de apresentação. *
+ O envio da documentação deve ser efetuado sempre na "SEGUNDA-FEIRA" anterior as datas de apresentação. 
 
 
 
-- Trabalho Prático 0
+00) Trabalho Prático 0:
 
 Use a package Criptography para
 
