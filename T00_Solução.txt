@@ -1,0 +1,30 @@
+﻿Solução Para o Trabalho Prático 00 :
+
+    • Problema 1:
+
+- Criamos uma comunicação baseada em sockets onde o agente Emitter é o responsável pelo envio de uma mensagem, e o agente Receiver irá recepcionar a mensagem. 
+-  A mensagem a ser enviada é cifrada usando o modo GCM;
+- Para a Derivação de chave a parti da password, utilizamos o algoritmo PBKDF2;
+- E a autenticação da chave usando o MAC.
+
+O processo iniciar com o Receiver disponibilizando uma conexão numa determinada porta/endereço. E, então o Emitter solicita iniciar a conexão com o Receiver. 
+
+Após a conexão estabelecida, o Emitter precisará informar uma senha, assim como o Receiver, para realizar a troca das mensagens, logo, ambas as senhas precisam ser inseridas em conformidade, para que não haja problemas no processo de  transmissão das mensagens.  O recurso escolhido para o pedido de senha entre os agentes foi o recurso getpass por ser uma maneira mais segura enquanto os agentes digitem suas senhas, sem que sejam exibidas no terminal.
+
+Após senha informada pelos agentes, o Receiver fica no aguardo de uma mensagem, enquanto que ao Emitter é solicitado que se insira qual mensagem deve ser enviada. Após a mensagem enviada, é exibida a versão cifrada, para confirmação de que a mensagem foi cifrada e enviada com sucesso.  O ultimo processo, é o Receiver receber a mensagem já decifrada.
+
+
+    • Dificuldades:
+
+1 - Utilização do  Notebook Jupyter para desenvolvimento do código, por isto fui utilizado o Pycharm para desenvolvimento e o 2 terminais (1 para cada agente) para a execução.
+
+
+    • Solução:
+
+1 – aguardando...
+
+
+
+
+
+
