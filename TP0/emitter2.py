@@ -44,7 +44,7 @@ class Emitter:
     def xor(self, pad, message):
         size = len(message)
         xored = bytearray(size)
-        word = 0
+        word = self.counter
         position = 0
         for i in range(size):
             xored[i] = pad[word][position] ^ message[i]

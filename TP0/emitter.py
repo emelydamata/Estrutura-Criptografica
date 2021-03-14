@@ -59,13 +59,10 @@ class Emitter:
 
     # Metodo para gerar o HMAC da chave
     def mac(self, secret, msg):
-        print("1.1")
         # Inicializacao da chave
         h = hmac.HMAC(secret, hashes.SHA256(), default_backend())
-        print("1.2")
         # Obtencao da chave em bytes e nao string
         h.update(msg)
-        print("1.3")
         return h.finalize()
 
     # Corpo da execucao
@@ -81,28 +78,22 @@ class Emitter:
             salt = os.urandom(16)
             # Usando o salt e a password derivamos uma chave
             key = self.pbkdf2Hmac(salt).derive(password)
+            # Usamos a chave e a password para gerar o HMAC correspondente à chave, IMPORTANTE, password poderia ser substituida por outro segredo
+            key_mac = self.mac(key, password)
             # Pedimos a mensagem ao utilizador
             msg = self.ask_message()
 
             try:
-                print("1")
-                # Usamos a chave e a password para gerar o HMAC correspondente à chave, IMPORTANTE, password poderia ser substituida por outro segredo
-                key_mac = self.mac(key, password)
-                print("2")
                 # Aqui usamos o metodo encrypt para obter o nonce e o criptograma concatenado com a tag usada para a autenticacao do criptograma em si
                 # IMPORTANTE o nonce podia ser um counter de cada lado, mas como isto serve para mandar uma só mensagem decidimos fazer desta forma
                 nonce, ciphertext_and_tag = self.encrypt(key, msg)
-                print("3")
                 # Juncao do salt (à vista), do HMAC da chave, do nonce (à vista) e do criptograma ++ tag
                 bundle = salt + key_mac + nonce + ciphertext_and_tag
-                print("4")
-                if len(bundle) > 0:
-                    self.conn.send(bundle)
-                    print('Mensagem Enviada')
-                else:
-                    self.finish()
+                self.conn.send(bundle)
+                print('Mensagem Enviada')
             except:
                 print("Erro na Comunicacao\n")
+                self.finish()
 
 
 #  Metodo para arrancar o emissor

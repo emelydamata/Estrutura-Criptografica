@@ -43,7 +43,7 @@ class Receiver:
     def xor(self, pad, message):
         size = len(message)
         xored = bytearray(size)
-        word = 0
+        word = self.counter
         position = 0
         for i in range(size):
             xored[i] = pad[word][position] ^ message[i]
@@ -62,15 +62,15 @@ class Receiver:
 
     # Corpo da execucao
     def run(self):
-        # Pedir o numero de palavras
-        n = 8
-        # Numero máximo de palavras
-        lim = pow(2, n)
         # Estabelecimento da ligacao com o emissor
         self.establish_connection()
         # Limite maximo de 1 ligacao
         i = 0
         while i < 1:
+            # Pedir o numero de palavras
+            n = 8
+            # Numero máximo de palavras
+            lim = pow(2, n)
             # Pedimos a password ao utilizador
             password = b'password123'
             # Geramos a lista de palavras com o shake

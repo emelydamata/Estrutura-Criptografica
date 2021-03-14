@@ -1,6 +1,7 @@
 import getpass
 import socket
 import os
+import time
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.backends import default_backend
@@ -73,6 +74,7 @@ class Emitter:
         # Por cada mensagem:
         i = 0
         while i < 100:
+            time.sleep(0.005)
             # Primeiro pedimos ao utilizador a password
             tmp = "password" + str(i)
             password = tmp.encode()

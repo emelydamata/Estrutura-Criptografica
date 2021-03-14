@@ -1,6 +1,7 @@
 import getpass
 import socket
 import math
+import time
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
@@ -44,7 +45,7 @@ class Emitter:
     def xor(self, pad, message):
         size = len(message)
         xored = bytearray(size)
-        word = 0
+        word = self.counter
         position = 0
         for i in range(size):
             xored[i] = pad[word][position] ^ message[i]
@@ -78,6 +79,7 @@ class Emitter:
         j = 0
         # Por cada mensagem:
         while j < 100:
+            time.sleep(0.005)
             # Pedimos a mensagem ao utilizador
             msg = b'There is nothing either good or bad, but thinking makes it so.'
             # Tamanho da mensagem codificada em bytes
