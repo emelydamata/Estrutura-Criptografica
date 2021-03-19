@@ -1,4 +1,4 @@
-# EstruturaCriptográfica
+# Estrutura Criptográfica
 
 Este repositório destina-se a armazenar os trabalhos práticos executados pelo grupo 01, composto por:
 
