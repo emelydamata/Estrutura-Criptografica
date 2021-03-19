@@ -2,8 +2,8 @@
 
 Este repositório destina-se a armazenar os trabalhos práticos executados pelo grupo 01, composto por:
 
-Emely da Mata Mendonça - PG39286
-João Pedro Dias Fernandes - A84034
+* Emely da Mata Mendonça - PG39286
+* João Pedro Dias Fernandes - A84034
 
 
 O semestre segue distribuido em 04 trabalhos práticos, distribuidos entre os respetivos prazos entregas:
